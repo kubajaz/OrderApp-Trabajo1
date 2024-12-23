@@ -30,15 +30,31 @@ public class OrderManager {
         }
     }
 
+    public Food getFood(int id) {
+        for (Food food : foods) {
+            if (food.getNumber() == id) {
+                return food;
+            }
+        }
+        return null;
+    }
+
     public void addPromotionalDiscount(PromotionalDiscount discount) {
         if (!discounts.contains(discount)) {
             discounts.add(discount);
         }
     }
 
-    // Metoda do złożenia zamówienia
-    public Order order(Customer customer, LocalDate date, Address deliveryAddress, PaymentType paymentType, PromotionalDiscount promotionalDiscount, List<Integer> idFood, List<Integer> amount) {
-        // Sprawdzanie, czy zniżka jest aktualna
+    public PromotionalDiscount getPromotionalDiscount(int code) {
+        for (PromotionalDiscount discount : discounts) {
+            if (discount.getCode() == code) {
+                return discount;
+            }
+        }
+        return null;
+    }
+
+    public Order order(Customer customer, LocalDate date, Address deliveryAddress, PromotionalDiscount promotionalDiscount, List<Integer> idFood, List<Integer> amount) {
         PromotionalDiscount validDiscount = null;
         if (promotionalDiscount != null && promotionalDiscount.isValid(date)) {
             validDiscount = promotionalDiscount;
@@ -46,26 +62,29 @@ public class OrderManager {
 
         List<OrderItem> items = new ArrayList<>();
         for (int i = 0; i < idFood.size(); i++) {
-            Food food = null;
-            for (Food f : foods) {
-                if (f.getNumber() == idFood.get(i)) {
-                    food = f;
-                    break;
-                }
-            }
+            Food food = getFood(idFood.get(i));
             if (food != null) {
                 items.add(new OrderItem(food, amount.get(i)));
             }
         }
 
         Order order = new Order(customer, date, deliveryAddress, items, validDiscount);
-        Payment payment = new Payment(LocalDate.now(), order.price(), paymentType);
-        order.pay(payment);
         orders.add(order);
         return order;
     }
 
-    // Metoda do uzyskania listy zamówień dla klienta
+    public void payOrder(Order order, PaymentType paymentType) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null.");
+        }
+        if (order.getPayment() != null) {
+            throw new IllegalStateException("Order has already been paid.");
+        }
+
+        Payment payment = new Payment(LocalDate.now(), order.price(), paymentType);
+        order.pay(payment);
+    }
+
     public List<Order> getCustomerOrderList(Customer customer) {
         List<Order> customerOrders = new ArrayList<>();
         for (Order order : orders) {
@@ -74,12 +93,5 @@ public class OrderManager {
             }
         }
         return customerOrders;
-    }
-
-    // Metoda do płacenia za zamówienie
-    public void payOrder(Order order, Payment payment) {
-        if (order != null) {
-            order.pay(payment);
-        }
     }
 }

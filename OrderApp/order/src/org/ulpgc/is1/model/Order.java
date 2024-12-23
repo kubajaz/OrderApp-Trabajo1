@@ -14,7 +14,6 @@ public class Order {
     private final PromotionalDiscount discount;
     private Payment payment;
 
-
     public Order(Customer customer, LocalDate date, Address deliveryAddress, List<OrderItem> items, PromotionalDiscount discount) {
         this.id = NEXT_ID++;
         this.customer = customer;
@@ -42,6 +41,10 @@ public class Order {
 
     public List<OrderItem> getItems() {
         return items;
+    }
+
+    public Payment getPayment() {
+        return payment;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class Order {
                     .append("-) ").append(item.getQuantity()).append(" units of:\n")
                     .append("|- Code: ").append(item.getFood().getNumber()).append("\n")
                     .append("|- Name: ").append(item.getFood().getName()).append("\n")
-                    .append("|- Description: ").append(item.getFood().getPrice()).append("\n")
+                    .append("|- Description: ").append(item.getFood().getDescription()).append("\n")
                     .append("|- Price: $").append(item.getFood().getPrice()).append("\n\n");
         }
         return orderDetails.toString();

@@ -31,7 +31,6 @@ public class PromotionalDiscount {
         return discount;
     }
 
-    // Sprawdzanie, czy zniżka jest aktualna
     public boolean isValid(LocalDate date) {
         return date.isAfter(from) && date.isBefore(to);
     }

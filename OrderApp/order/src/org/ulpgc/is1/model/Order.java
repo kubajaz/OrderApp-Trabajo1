@@ -46,10 +46,36 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order ID: " + id + "\nCustomer: " + customer.getName() + " " + customer.getSurname() +
-                "\nDelivery Address: " + deliveryAddress +
-                "\nItems: " + items +
-                "\nTotal Price: $" + price() +
-                "\nStatus: " + status;
+        StringBuilder orderDetails = new StringBuilder();
+        orderDetails.append("******************************************\n")
+                .append(customer.getName()).append(" ").append(customer.getSurname())
+                .append(" (").append(customer.getPhone().getNumber()).append(")\n")
+                .append("******************************************\n\n")
+                .append("--------------------------------------------------------------------\n")
+                .append("Order ").append(id).append("\n")
+                .append("--------------------------------------------------------------------\n")
+                .append("*) Order data:\n")
+                .append("|- Code: ").append(id).append("\n")
+                .append("|- Made on: ").append(date).append("\n")
+                .append("|- Place of the order: ").append(deliveryAddress).append("\n")
+                .append("|- State: ").append(status).append("\n")
+                .append("|- Payment information: ").append(payment != null ? payment.getAmount() : "Not paid yet").append("\n")
+                .append("|- Discount code: ").append(discount != null
+                        ? "{" + discount.getCode() + ", " + discount.getFrom() + ", "
+                        + discount.getTo() + ", " + discount.getDiscount() + "%}"
+                        : "None").append("\n")
+                .append("|- Total: $").append(price()).append("\n\n")
+                .append("------------------------------------------------------------------\n")
+                .append("Order items:\n");
+
+        for (OrderItem item : items) {
+            orderDetails.append("________________________________________\n")
+                    .append("-) ").append(item.getQuantity()).append(" units of:\n")
+                    .append("|- Code: ").append(item.getFood().getNumber()).append("\n")
+                    .append("|- Name: ").append(item.getFood().getName()).append("\n")
+                    .append("|- Description: ").append(item.getFood().getPrice()).append("\n")
+                    .append("|- Price: $").append(item.getFood().getPrice()).append("\n\n");
+        }
+        return orderDetails.toString();
     }
 }
